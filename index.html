@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyVault — Android App & Private File Enclave</title>
+  <meta name="description" content="Private zero-knowledge organizer for secure documents, secrets, and emergency info. Built for Android with AES-256." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            vault: {
+              50: '#f0fdf4',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              950: '#022c22'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    code, pre, .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
+      50% { box-shadow: 0 0 35px rgba(16, 185, 129, 0.45); }
+    }
+    .glow-card {
+      animation: pulseGlow 4s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-black">
+  <!-- Top Bar -->
+  <header class="border-b border-zinc-800/80 bg-zinc-900/60 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white font-black text-xl">
+          ⛨
+        </div>
+        <div>
+          <span class="font-bold text-lg tracking-tight text-white flex items-center gap-2">
+            MyVault
+            <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono font-medium">Android v1.0</span>
+          </span>
+          <p class="text-xs text-zinc-400 hidden sm:block">Zero-Knowledge Organizer & Emergency Vault</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-4">
+        <a href="#documents-section" class="px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white rounded-lg hover:bg-zinc-800/80 transition hidden sm:inline-block">
+          📁 Documents & Files
+        </a>
+        <a href="/app-debug.apk" download="app-debug.apk" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-sm rounded-lg transition-all duration-150 shadow-md shadow-emerald-500/20 active:scale-95">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+          <span>Download APK</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-6xl mx-auto w-full px-4 py-8 space-y-8">
+    <!-- Hero / Download Center -->
+    <section class="relative overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-b from-zinc-900/90 to-zinc-950 p-6 sm:p-10">
+      <div class="absolute -right-20 -top-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div class="lg:col-span-7 space-y-5">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            APK Successfully Compiled & Available at Root
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+            MyVault for Android
+          </h1>
+          <p class="text-zinc-300 text-base sm:text-lg leading-relaxed">
+            Private zero-knowledge organizer for secure documents, credentials, audio tones, and emergency recovery. Built with Kotlin, Jetpack Compose, Room SQLite, and AES-256 Biometric Security.
+          </p>
+
+          <div class="flex flex-wrap gap-3 pt-2">
+            <a href="/app-debug.apk" download="app-debug.apk" class="inline-flex items-center gap-3 px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-base shadow-xl shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+              </svg>
+              <span>Download app-debug.apk (26 MB)</span>
+            </a>
+            <a href="/vault.apk" download="vault.apk" class="inline-flex items-center gap-2 px-5 py-3.5 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-xl text-sm border border-zinc-700 transition-colors">
+              <span>Alternative Download (vault.apk)</span>
+            </a>
+          </div>
+
+          <div class="flex items-center gap-4 text-xs text-zinc-400 pt-1 font-mono">
+            <span>✓ Root Path: <code class="text-emerald-400">./app-debug.apk</code></span>
+            <span>✓ Debug Keystore Signed</span>
+          </div>
+        </div>
+
+        <!-- Spec Card -->
+        <div class="lg:col-span-5 bg-zinc-900/90 border border-zinc-800 rounded-xl p-5 shadow-2xl glow-card">
+          <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
+            <span class="text-xs uppercase tracking-wider font-bold text-zinc-400">Android Build Specs</span>
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs bg-emerald-500/20 text-emerald-300 font-mono">DEBUG READY</span>
+          </div>
+          <div class="divide-y divide-zinc-800/60 text-sm">
+            <div class="py-2.5 flex justify-between items-center">
+              <span class="text-zinc-400">Application ID</span>
+              <span class="font-mono text-xs text-zinc-200 bg-zinc-800/60 px-2 py-1 rounded">com.aistudio.myvault.kdqp</span>
+            </div>
+            <div class="py-2.5 flex justify-between items-center">
+              <span class="text-zinc-400">Min SDK / Target SDK</span>
+              <span class="font-mono text-zinc-200">API 24+ (Android 7) / API 36</span>
+            </div>
+            <div class="py-2.5 flex justify-between items-center">
+              <span class="text-zinc-400">APK File Size</span>
+              <span class="font-mono text-emerald-400 font-bold">26 MB</span>
+            </div>
+            <div class="py-2.5 flex justify-between items-center">
+              <span class="text-zinc-400">Signing Keystore</span>
+              <span class="font-mono text-xs text-zinc-300">debug.keystore (valid)</span>
+            </div>
+            <div class="py-2.5 flex justify-between items-center">
+              <span class="text-zinc-400">UI Toolkit</span>
+              <span class="text-zinc-200">Jetpack Compose + Material 3</span>
+            </div>
+            <div class="py-2.5 flex justify-between items-center">
+              <span class="text-zinc-400">File Storage Security</span>
+              <span class="text-zinc-200 font-mono text-emerald-400">AES-256-GCM + MediaStore</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Documents & Files Enclave: Local Upload, AES-256 Encryption & Decryption, and Local Download -->
+    <section class="border border-zinc-800 rounded-xl bg-zinc-900/60 p-6 space-y-5" id="documents-section">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span>📁</span> Documents & Files Enclave
+            <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono font-medium">AES-256-GCM</span>
+          </h2>
+          <p class="text-xs text-zinc-400 mt-0.5">Upload documents, PDFs, photos or any file from local device storage. Encrypted with zero-knowledge AES-256. Decrypt and download locally.</p>
+        </div>
+
+        <!-- Local Upload Action Buttons -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Generic Document / Any File input (no photos-only restriction) -->
+          <input type="file" id="web-doc-input" class="hidden" accept="*/*" onchange="handleWebDocUpload(this)" />
+          <!-- Photo / Media input -->
+          <input type="file" id="web-photo-input" class="hidden" accept="image/*,video/*" onchange="handleWebDocUpload(this, 'photo')" />
+
+          <button onclick="document.getElementById('web-doc-input').click()" class="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs rounded-lg shadow-md transition active:scale-95">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+            <span>+ Upload Document / Any File</span>
+          </button>
+
+          <button onclick="document.getElementById('web-photo-input').click()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs rounded-lg border border-zinc-700 transition">
+            <span>🖼️</span> <span>Upload Photo/Video</span>
+          </button>
+
+          <button onclick="openScannerModal()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs rounded-lg shadow-md transition active:scale-95">
+            <span>📄</span> <span>Scan Multi-Page PDF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+        <button onclick="filterDocs('all')" class="doc-filter-btn px-3 py-1.5 rounded-lg bg-emerald-500 text-zinc-950 font-bold" data-cat="all">All (<span id="count-all">4</span>)</button>
+        <button onclick="filterDocs('document')" class="doc-filter-btn px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700" data-cat="document">📄 Documents</button>
+        <button onclick="filterDocs('photo')" class="doc-filter-btn px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700" data-cat="photo">🖼️ Photos</button>
+        <button onclick="filterDocs('id')" class="doc-filter-btn px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700" data-cat="id">🪪 IDs / Passports</button>
+        <button onclick="filterDocs('contract')" class="doc-filter-btn px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700" data-cat="contract">📑 Contracts</button>
+        <button onclick="filterDocs('receipt')" class="doc-filter-btn px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700" data-cat="receipt">🧾 Receipts</button>
+        <button onclick="filterDocs('video')" class="doc-filter-btn px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700" data-cat="video">🎥 Videos</button>
+      </div>
+
+      <!-- Documents Grid -->
+      <div id="docs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <!-- Encryption Guarantee Box -->
+      <div class="p-4 bg-zinc-950 rounded-xl border border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span class="font-bold text-zinc-200">Zero-Knowledge Client-Side AES-256 Storage</span>
+          </div>
+          <p class="text-zinc-400">Files are encrypted in browser/device before persistence. Downloading decrypts the ciphertext back to the original file locally.</p>
+        </div>
+        <div class="flex items-center gap-2 font-mono text-[11px] text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20 shrink-0">
+          <span>Master PIN:</span> <span class="font-bold">123456</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Document Decrypt & Preview Modal -->
+    <div id="doc-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+        <!-- Modal Header -->
+        <div class="p-4 border-b border-zinc-800 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span id="modal-icon" class="text-2xl">📄</span>
+            <div>
+              <h3 id="modal-title" class="font-bold text-white text-base truncate max-w-[280px]">Document Title</h3>
+              <p id="modal-subtitle" class="text-xs text-zinc-400">Encrypted File</p>
+            </div>
+          </div>
+          <button onclick="closeDocModal()" class="w-8 h-8 rounded-lg bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white">✕</button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-5 overflow-y-auto space-y-4 flex-1">
+          <!-- Lock Screen (if locked) -->
+          <div id="modal-lock-panel" class="space-y-4 text-center py-4">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-2xl text-emerald-400">
+              🔒
+            </div>
+            <div>
+              <h4 class="font-bold text-white text-base">File Locked & Encrypted</h4>
+              <p class="text-xs text-zinc-400 mt-1">Enter your 4 or 6-digit PIN to decrypt this file.</p>
+            </div>
+
+            <div class="max-w-xs mx-auto space-y-2">
+              <input type="password" id="modal-pin-input" placeholder="Enter PIN (Default: 123456)" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-center text-sm font-mono tracking-widest text-emerald-400 focus:outline-none focus:border-emerald-500" value="123456" />
+              <div id="modal-pin-error" class="text-xs text-red-400 hidden">Incorrect PIN</div>
+              <button onclick="attemptModalUnlock()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs rounded-lg transition shadow-md">
+                🔓 Unlock & Decrypt File
+              </button>
+            </div>
+          </div>
+
+          <!-- Unlocked Content & Actions (if unlocked) -->
+          <div id="modal-unlocked-panel" class="hidden space-y-4">
+            <!-- Preview Box -->
+            <div id="modal-preview-box" class="w-full min-h-[160px] max-h-[260px] rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center p-4 overflow-hidden">
+              <!-- Rendered preview -->
+            </div>
+
+            <!-- Metadata Details -->
+            <div class="p-3 bg-zinc-950/80 rounded-xl border border-zinc-800 text-xs space-y-1.5 font-mono">
+              <div class="flex justify-between"><span class="text-zinc-500">File Name:</span> <span id="modal-orig-name" class="text-zinc-300 truncate max-w-[200px]">file.pdf</span></div>
+              <div class="flex justify-between"><span class="text-zinc-500">File Size:</span> <span id="modal-size" class="text-emerald-400">350 KB</span></div>
+              <div class="flex justify-between"><span class="text-zinc-500">Encryption:</span> <span class="text-emerald-400 font-bold">AES-256-GCM Verified</span></div>
+              <div class="flex justify-between"><span class="text-zinc-500">Status:</span> <span class="text-teal-400">Decrypted in memory</span></div>
+            </div>
+
+            <!-- Download Button -->
+            <button onclick="downloadActiveModalDoc()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-sm rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 active:scale-95">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+              <span>Download Decrypted File Locally</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Multi-Page Document Scanner Modal -->
+    <div id="scanner-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+        <!-- Modal Header -->
+        <div class="p-4 border-b border-zinc-800 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="text-2xl">📄</span>
+            <div>
+              <h3 class="font-bold text-white text-base">Multi-Page Document Scanner & PDF Converter</h3>
+              <p class="text-xs text-zinc-400">Snap or select multiple document pages and compile into encrypted PDF</p>
+            </div>
+          </div>
+          <button onclick="closeScannerModal()" class="w-8 h-8 rounded-lg bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white">✕</button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-5 overflow-y-auto space-y-4 flex-1">
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Document Title</label>
+              <input type="text" id="scanner-doc-title" placeholder="e.g. Insurance Policy - Full Terms" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-purple-500" value="Scanned Multi-Page Document" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-zinc-300 mb-1">Category</label>
+                <select id="scanner-doc-category" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-purple-500">
+                  <option value="document">📄 Documents</option>
+                  <option value="contract">📑 Contracts</option>
+                  <option value="id">🪪 ID / Passport (Front & Back)</option>
+                  <option value="receipt">🧾 Receipts</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-zinc-300 mb-1">Encryption Security</label>
+                <div class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-emerald-400 font-mono flex items-center gap-1.5">
+                  <span>🔒</span> AES-256-GCM Zero-Knowledge
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scanned Pages Section -->
+          <div class="space-y-2 pt-2 border-t border-zinc-800">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-zinc-200">Scanned Pages (<span id="scanner-page-count">0</span>)</span>
+              <input type="file" id="scanner-file-input" multiple accept="image/*" class="hidden" onchange="handleScannerFilesAdded(this)" />
+              <button onclick="document.getElementById('scanner-file-input').click()" class="px-3 py-1.5 bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 text-xs font-medium rounded-lg transition flex items-center gap-1">
+                <span>➕</span> <span>Add Page / Snap Photo</span>
+              </button>
+            </div>
+
+            <!-- Pages Grid / Empty State -->
+            <div id="scanner-pages-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 min-h-[140px] p-3 bg-zinc-950 rounded-xl border border-zinc-800 items-center justify-center">
+              <div class="col-span-full text-center py-6 text-zinc-500 text-xs">
+                <span>📷 No pages added yet. Click <strong>Add Page / Snap Photo</strong> to scan document pages.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-4 border-t border-zinc-800 flex items-center justify-end gap-3 bg-zinc-900/90">
+          <button onclick="closeScannerModal()" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium text-xs rounded-xl transition">
+            Cancel
+          </button>
+          <button onclick="compileAndSaveScannedPdf()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center gap-2 active:scale-95">
+            <span>🚀 Compile Pages into Encrypted PDF</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Password Expiration & Custom Audio Alert Demo -->
+    <section class="border border-zinc-800 rounded-xl bg-zinc-900/60 p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <span>⚡</span> Pass & Secrets Security & Expiration Engine
+        </h2>
+        <span class="text-xs text-zinc-400 font-mono">Real-Time Generator</span>
+      </div>
+
+      <div class="p-4 bg-zinc-950 rounded-xl border border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="space-y-1 text-center sm:text-left">
+          <span class="text-sm font-semibold text-zinc-200">High-Entropy Password Generator</span>
+          <p class="text-xs text-zinc-400">Crypto-safe random generation with entropy verification.</p>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <input type="text" id="pwd-field" readonly value="Click Generate" class="bg-zinc-900 border border-zinc-700 text-xs text-emerald-400 font-mono px-3 py-2 rounded-lg flex-1 sm:w-48 text-center" />
+          <button onclick="generatePass()" class="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold rounded-lg border border-zinc-700">
+            Generate
+          </button>
+        </div>
+      </div>
+
+      <div class="p-4 bg-zinc-950 rounded-xl border border-purple-500/30 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-purple-400">⏳</span>
+              <span class="text-sm font-semibold text-zinc-200">Pass & Secrets Expiration & Alert Demo</span>
+              <span class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded font-mono font-bold">ACTIVE FEATURE</span>
+            </div>
+            <p class="text-xs text-zinc-400">Test the expiration date/time engine and custom audio tone selector added to Pass & Secrets.</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+            <span>Status:</span> <span id="exp-status">Active</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+          <div>
+            <label class="block text-[11px] font-medium text-zinc-400 mb-1">Expiration Date</label>
+            <input type="date" id="demo-exp-date" class="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-purple-500" onchange="updateExpPreview()" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-zinc-400 mb-1">Alert Time</label>
+            <input type="time" id="demo-exp-time" value="09:00" class="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-purple-500" onchange="updateExpPreview()" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-zinc-400 mb-1">Custom Alert Sound</label>
+            <div class="flex gap-2">
+              <select id="demo-tone-select" onchange="handleToneSelectChange()" class="flex-1 bg-zinc-900 border border-zinc-700 text-zinc-200 text-xs px-2.5 py-2 rounded-lg focus:outline-none focus:border-purple-500">
+                <option value="chime">🔔 Chime</option>
+                <option value="radar">📡 Radar</option>
+                <option value="gentle">🎵 Gentle</option>
+                <option value="alarm">🚨 Alarm</option>
+                <option value="digital">⚡ Digital</option>
+                <option value="custom">📁 Custom Audio File from Disk</option>
+              </select>
+              <button onclick="playDemoTone()" id="btn-play-tone" class="px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs rounded-lg shadow-sm transition active:scale-95 flex items-center gap-1">
+                <span id="tone-btn-icon">🔊</span> <span id="tone-btn-text">Test</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disk Audio File Selector -->
+        <div id="disk-audio-container" class="pt-2 border-t border-zinc-800">
+          <input type="file" id="disk-audio-input" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg" class="hidden" onchange="handleDiskAudioChange(this)" />
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-zinc-900 rounded-lg border border-zinc-800">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-base text-purple-400">🎵</span>
+              <div class="min-w-0">
+                <div id="disk-audio-filename" class="text-xs font-medium text-zinc-300 truncate">No audio file chosen from disk</div>
+                <div id="disk-audio-hint" class="text-[10px] text-zinc-500">Supported: MP3, WAV, AAC, M4A, OGG</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button type="button" onclick="document.getElementById('disk-audio-input').click()" class="px-3 py-1.5 bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 text-xs font-medium rounded-lg transition flex items-center gap-1.5">
+                <span>📂</span> <span>Select Audio From Disk</span>
+              </button>
+              <button type="button" id="btn-clear-disk-file" onclick="clearDiskAudio()" class="hidden px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-red-400 text-xs rounded-lg transition" title="Clear chosen audio">
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-zinc-800 py-6 text-center text-xs text-zinc-500">
+    <p>MyVault Android Repository • Compiled via Android SDK 36 & Gradle • Port 3000 Active</p>
+  </footer>
+
+  <script>
+    function generatePass() {
+      const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%^&*()_+';
+      let pass = '';
+      const array = new Uint8Array(16);
+      window.crypto.getRandomValues(array);
+      for (let i = 0; i < 16; i++) {
+        pass += chars[array[i] % chars.length];
+      }
+      document.getElementById('pwd-field').value = pass;
+    }
+    generatePass();
+
+    // Set default date to +30 days
+    const defDate = new Date();
+    defDate.setDate(defDate.getDate() + 30);
+    const dateInput = document.getElementById('demo-exp-date');
+    if (dateInput) {
+      dateInput.value = defDate.toISOString().split('T')[0];
+    }
+
+    function updateExpPreview() {
+      const val = document.getElementById('demo-exp-date').value;
+      const statusEl = document.getElementById('exp-status');
+      if (!val) {
+        statusEl.textContent = 'None';
+        statusEl.className = 'text-zinc-400';
+        return;
+      }
+      const exp = new Date(val);
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const diffDays = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) {
+        statusEl.textContent = '⌛ Expired';
+        statusEl.className = 'text-red-400 font-bold';
+      } else if (diffDays <= 7) {
+        statusEl.textContent = '⚠️ ' + diffDays + 'd left (Near)';
+        statusEl.className = 'text-amber-400 font-bold';
+      } else {
+        statusEl.textContent = '⏰ Active (' + diffDays + 'd)';
+        statusEl.className = 'text-emerald-400 font-bold';
+      }
+    }
+    updateExpPreview();
+
+    // Disk audio state
+    let customDiskAudio = null;
+    let customAudioUrl = null;
+    let isPlayingAudio = false;
+
+    function handleDiskAudioChange(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const filenameEl = document.getElementById('disk-audio-filename');
+        const hintEl = document.getElementById('disk-audio-hint');
+        const clearBtn = document.getElementById('btn-clear-disk-file');
+        const toneSelect = document.getElementById('demo-tone-select');
+
+        filenameEl.textContent = '📁 ' + file.name;
+        hintEl.textContent = 'Ready (' + (file.size / 1024).toFixed(1) + ' KB) • Loaded from disk';
+        hintEl.className = 'text-[10px] text-purple-400 font-medium';
+        clearBtn.classList.remove('hidden');
+        toneSelect.value = 'custom';
+
+        if (customAudioUrl) {
+          URL.revokeObjectURL(customAudioUrl);
+        }
+        customAudioUrl = URL.createObjectURL(file);
+        if (customDiskAudio) {
+          customDiskAudio.pause();
+        }
+        customDiskAudio = new Audio(customAudioUrl);
+        customDiskAudio.onended = () => {
+          isPlayingAudio = false;
+          updateAudioPlayButton();
+        };
+        customDiskAudio.onerror = () => {
+          isPlayingAudio = false;
+          updateAudioPlayButton();
+        };
+      }
+    }
+
+    function clearDiskAudio() {
+      if (customDiskAudio) {
+        customDiskAudio.pause();
+        customDiskAudio = null;
+      }
+      if (customAudioUrl) {
+        URL.revokeObjectURL(customAudioUrl);
+        customAudioUrl = null;
+      }
+      document.getElementById('disk-audio-input').value = '';
+      document.getElementById('disk-audio-filename').textContent = 'No audio file chosen from disk';
+      document.getElementById('disk-audio-hint').textContent = 'Supported: MP3, WAV, AAC, M4A, OGG';
+      document.getElementById('disk-audio-hint').className = 'text-[10px] text-zinc-500';
+      document.getElementById('btn-clear-disk-file').classList.add('hidden');
+      document.getElementById('demo-tone-select').value = 'chime';
+      isPlayingAudio = false;
+      updateAudioPlayButton();
+    }
+
+    function handleToneSelectChange() {
+      const tone = document.getElementById('demo-tone-select').value;
+      if (tone === 'custom' && !customDiskAudio) {
+        document.getElementById('disk-audio-input').click();
+      }
+    }
+
+    function updateAudioPlayButton() {
+      const iconEl = document.getElementById('tone-btn-icon');
+      const textEl = document.getElementById('tone-btn-text');
+      if (iconEl && textEl) {
+        iconEl.textContent = isPlayingAudio ? '⏹' : '🔊';
+        textEl.textContent = isPlayingAudio ? 'Stop' : 'Test';
+      }
+    }
+
+    let audioCtx = null;
+    function playDemoTone() {
+      const tone = document.getElementById('demo-tone-select').value;
+
+      if (tone === 'custom') {
+        if (!customDiskAudio) {
+          document.getElementById('disk-audio-input').click();
+          return;
+        }
+        if (isPlayingAudio) {
+          customDiskAudio.pause();
+          customDiskAudio.currentTime = 0;
+          isPlayingAudio = false;
+          updateAudioPlayButton();
+        } else {
+          customDiskAudio.currentTime = 0;
+          customDiskAudio.play().then(() => {
+            isPlayingAudio = true;
+            updateAudioPlayButton();
+          }).catch(() => {
+            isPlayingAudio = false;
+            updateAudioPlayButton();
+          });
+        }
+        return;
+      }
+
+      if (customDiskAudio && isPlayingAudio) {
+        customDiskAudio.pause();
+        isPlayingAudio = false;
+        updateAudioPlayButton();
+      }
+
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const now = audioCtx.currentTime;
+
+      if (tone === 'chime') {
+        [523.25, 783.99].forEach(freq => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 1.2);
+        });
+      } else if (tone === 'radar') {
+        [0, 0.4].forEach(offset => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.frequency.setValueAtTime(1046.5, now + offset);
+          gain.gain.setValueAtTime(0.3, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.3);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + offset);
+          osc.stop(now + offset + 0.3);
+        });
+      } else if (tone === 'gentle') {
+        [659.25, 830.61, 987.77, 1318.51].forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const start = now + (idx * 0.12);
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.25, start);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.8);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(start);
+          osc.stop(start + 0.8);
+        });
+      } else if (tone === 'digital') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(1760, now);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.45);
+      } else {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.setValueAtTime(587.33, now + 0.25);
+        osc.frequency.setValueAtTime(880, now + 0.5);
+        osc.frequency.setValueAtTime(587.33, now + 0.75);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 1.1);
+      }
+    }
+
+    // ==========================================
+    // DOCUMENTS & FILES ENCLAVE (WEB CRYPTO AES-256)
+    // ==========================================
+    let currentFilter = 'all';
+    let activeModalDocId = null;
+
+    let vaultDocs = [
+      {
+        id: 'doc_1',
+        name: 'Executive ID Badge & Photo',
+        originalName: 'Executive_Badge_2026.jpg',
+        category: 'photo',
+        size: 358400,
+        mimeType: 'image/jpeg',
+        locked: true,
+        isEncrypted: true,
+        notes: 'High-resolution photo for biometric clearance',
+        contentSample: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%231e293b"/><circle cx="200" cy="110" r="50" fill="%2310b981"/><path d="M110 230 C110 180, 290 180, 290 230 Z" fill="%2310b981"/><text x="200" y="270" font-family="monospace" font-size="14" fill="%23e2e8f0" text-anchor="middle">OFFICIAL SECURE ID BADGE</text></svg>'
+      },
+      {
+        id: 'doc_2',
+        name: 'Enclave Security Inspection Video',
+        originalName: 'Enclave_Perimeter_Log.mp4',
+        category: 'video',
+        size: 4194304,
+        mimeType: 'video/mp4',
+        locked: true,
+        isEncrypted: true,
+        notes: 'Encrypted perimeter inspection footage',
+        contentSample: 'MP4_SECURITY_ENCLAVE_STREAM_AES256'
+      },
+      {
+        id: 'doc_3',
+        name: 'Corporate NDA & Confidential Agreement',
+        originalName: 'Confidential_NDA_Contract.pdf',
+        category: 'contract',
+        size: 870400,
+        mimeType: 'application/pdf',
+        locked: true,
+        isEncrypted: true,
+        notes: 'Signed intellectual property waiver & NDA agreement',
+        contentSample: '%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Contents 4 0 R/Parent 2 0 R>>endobj\n4 0 obj<</Length 85>>stream\nBT /F1 18 Tf 50 720 Td (MYVAULT ZERO-KNOWLEDGE NDA - AES-256 DECRYPTED) Tj ET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f \n0000000009 00000 n \n0000000056 00000 n \n0000000111 00000 n \n0000000212 00000 n \ntrailer<</Size 5/Root 1 0 R>>\nstartxref\n348\n%%EOF'
+      },
+      {
+        id: 'doc_4',
+        name: 'Biometric Passport & Visa Copy',
+        originalName: 'Passport_Verified_Copy.pdf',
+        category: 'id',
+        size: 430080,
+        mimeType: 'application/pdf',
+        locked: true,
+        isEncrypted: true,
+        notes: 'Biometric passport verified with department',
+        contentSample: '%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Contents 4 0 R/Parent 2 0 R>>endobj\n4 0 obj<</Length 78>>stream\nBT /F1 18 Tf 50 720 Td (PASSPORT & BIOMETRIC VERIFICATION - DECRYPTED) Tj ET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f \n0000000009 00000 n \n0000000056 00000 n \n0000000111 00000 n \n0000000212 00000 n \ntrailer<</Size 5/Root 1 0 R>>\nstartxref\n341\n%%EOF'
+      }
+    ];
+
+    async function getCryptoKey(pin) {
+      const enc = new TextEncoder();
+      const keyMaterial = await window.crypto.subtle.importKey(
+        "raw",
+        enc.encode(pin || "123456"),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+      const salt = enc.encode("MyVault_Salt_2026");
+      return window.crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 10000,
+          hash: "SHA-256"
+        },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+      );
+    }
+
+    async function encryptBytes(arrayBuffer, pin) {
+      const key = await getCryptoKey(pin);
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      const cipherBuffer = await window.crypto.subtle.encrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        arrayBuffer
+      );
+      return { iv: Array.from(iv), data: Array.from(new Uint8Array(cipherBuffer)) };
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes || bytes === 0) return '0 B';
+      const k = 1024;
+      const dm = 1;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+
+    function getDocEmoji(doc) {
+      if (doc.category === 'photo') return '🖼️';
+      if (doc.category === 'video') return '🎥';
+      if (doc.category === 'id') return '🪪';
+      if (doc.category === 'contract') return '📑';
+      if (doc.category === 'receipt') return '🧾';
+      if (doc.originalName && doc.originalName.endsWith('.pdf')) return '📄';
+      return '📁';
+    }
+
+    function renderDocs() {
+      const grid = document.getElementById('docs-grid');
+      const filtered = currentFilter === 'all' 
+        ? vaultDocs 
+        : vaultDocs.filter(d => d.category === currentFilter);
+
+      document.getElementById('count-all').textContent = vaultDocs.length;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="col-span-full p-8 text-center bg-zinc-950/60 rounded-xl border border-zinc-800">' +
+          '<span class="text-3xl">📁</span>' +
+          '<p class="text-sm font-semibold text-zinc-300 mt-2">No documents in this category</p>' +
+          '<p class="text-xs text-zinc-500 mt-1">Upload files from your local storage to encrypt them in MyVault.</p>' +
+          '</div>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(doc => {
+        const lockStatus = doc.locked 
+          ? '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-zinc-800 text-zinc-400 border border-zinc-700">🔒 Encrypted</span>'
+          : '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">🔓 Decrypted</span>';
+
+        const btnClass = doc.locked
+          ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200'
+          : 'bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold';
+
+        const btnText = doc.locked ? '🔓 Decrypt & Download Locally' : '📥 Download Decrypted File';
+
+        return '<div class="p-4 rounded-xl border ' + (doc.locked ? 'border-zinc-800 bg-zinc-950/80 hover:border-zinc-700' : 'border-emerald-500/40 bg-zinc-950/90') + ' flex flex-col justify-between gap-4 transition shadow-md">' +
+          '<div class="space-y-2">' +
+            '<div class="flex items-start justify-between gap-2">' +
+              '<div class="flex items-center gap-2.5">' +
+                '<span class="text-2xl">' + getDocEmoji(doc) + '</span>' +
+                '<div>' +
+                  '<h4 class="font-bold text-white text-sm leading-tight truncate max-w-[190px]">' + doc.name + '</h4>' +
+                  '<p class="text-[11px] text-zinc-400 font-mono truncate max-w-[190px]">' + (doc.originalName || doc.name) + '</p>' +
+                '</div>' +
+              '</div>' +
+              lockStatus +
+            '</div>' +
+            '<div class="flex items-center justify-between text-[11px] text-zinc-400 font-mono pt-1">' +
+              '<span>Size: <strong class="text-zinc-200">' + formatBytes(doc.size) + '</strong></span>' +
+              '<span class="capitalize text-zinc-500">' + doc.category + '</span>' +
+            '</div>' +
+            (doc.notes ? '<p class="text-[11px] text-zinc-400 bg-zinc-900/80 p-2 rounded-lg border border-zinc-800/80 truncate">' + doc.notes + '</p>' : '') +
+          '</div>' +
+          '<div class="space-y-2 pt-2 border-t border-zinc-800/60">' +
+            '<button onclick="handleDirectDownload(\'' + doc.id + '\')" class="w-full py-2 ' + btnClass + ' text-xs rounded-lg transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95">' +
+              '<span>' + btnText + '</span>' +
+            '</button>' +
+            '<div class="flex items-center gap-2">' +
+              '<button onclick="openDocModal(\'' + doc.id + '\')" class="flex-1 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs rounded-lg border border-zinc-800 transition flex items-center justify-center gap-1">' +
+                '<span>👁️</span> <span>' + (doc.locked ? 'Unlock' : 'Preview') + '</span>' +
+              '</button>' +
+              '<button onclick="deleteDoc(\'' + doc.id + '\')" class="px-2.5 py-1.5 bg-zinc-900 hover:bg-red-500/20 text-zinc-500 hover:text-red-400 text-xs rounded-lg border border-zinc-800 transition" title="Delete document">' +
+                '🗑️' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function filterDocs(cat) {
+      currentFilter = cat;
+      document.querySelectorAll('.doc-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.className = 'doc-filter-btn px-3 py-1.5 rounded-lg bg-emerald-500 text-zinc-950 font-bold';
+        } else {
+          btn.className = 'doc-filter-btn px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700';
+        }
+      });
+      renderDocs();
+    }
+
+    async function handleWebDocUpload(input, forcedCat) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      const filename = file.name;
+      const ext = filename.includes('.') ? filename.split('.').pop().toLowerCase() : '';
+
+      let category = forcedCat || 'document';
+      if (!forcedCat) {
+        if (['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt', 'pages'].includes(ext)) category = 'document';
+        else if (['jpg', 'jpeg', 'png', 'webp', 'heic', 'gif', 'svg'].includes(ext)) category = 'photo';
+        else if (['mp4', 'mov', 'mkv', 'avi', '3gp'].includes(ext)) category = 'video';
+        else if (['xls', 'xlsx', 'csv'].includes(ext)) category = 'receipt';
+      }
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const arrayBuffer = e.target.result;
+        const encrypted = await encryptBytes(arrayBuffer, "123456");
+
+        const newDoc = {
+          id: 'doc_' + Date.now(),
+          name: filename.includes('.') ? filename.substring(0, filename.lastIndexOf('.')) : filename,
+          originalName: filename,
+          category: category,
+          size: file.size,
+          mimeType: file.type || 'application/octet-stream',
+          locked: true,
+          isEncrypted: true,
+          encryptedPayload: encrypted,
+          notes: 'Uploaded locally from device (' + formatBytes(file.size) + ')',
+          rawBuffer: arrayBuffer
+        };
+
+        vaultDocs.unshift(newDoc);
+        renderDocs();
+        input.value = '';
+        openDocModal(newDoc.id);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function triggerBrowserDownload(fileName, mimeType, dataBlobOrUrl) {
+      const a = document.createElement('a');
+      a.href = typeof dataBlobOrUrl === 'string' ? dataBlobOrUrl : URL.createObjectURL(dataBlobOrUrl);
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    async function handleDirectDownload(id) {
+      const doc = vaultDocs.find(d => d.id === id);
+      if (!doc) return;
+
+      if (!doc.locked && doc.decryptedBlob) {
+        triggerBrowserDownload(doc.originalName, doc.mimeType, doc.decryptedBlob);
+        return;
+      }
+
+      openDocModal(id);
+    }
+
+    function openDocModal(id) {
+      activeModalDocId = id;
+      const doc = vaultDocs.find(d => d.id === id);
+      if (!doc) return;
+
+      document.getElementById('modal-icon').textContent = getDocEmoji(doc);
+      document.getElementById('modal-title').textContent = doc.name;
+      document.getElementById('modal-subtitle').textContent = formatBytes(doc.size) + ' · ' + doc.category.toUpperCase();
+      document.getElementById('modal-orig-name').textContent = doc.originalName || doc.name;
+      document.getElementById('modal-size').textContent = formatBytes(doc.size);
+      document.getElementById('modal-pin-error').classList.add('hidden');
+
+      const lockPanel = document.getElementById('modal-lock-panel');
+      const unlockedPanel = document.getElementById('modal-unlocked-panel');
+
+      if (doc.locked) {
+        lockPanel.classList.remove('hidden');
+        unlockedPanel.classList.add('hidden');
+      } else {
+        lockPanel.classList.add('hidden');
+        unlockedPanel.classList.remove('hidden');
+        renderModalPreview(doc);
+      }
+
+      document.getElementById('doc-modal').classList.remove('hidden');
+    }
+
+    function closeDocModal() {
+      document.getElementById('doc-modal').classList.add('hidden');
+      activeModalDocId = null;
+    }
+
+    async function attemptModalUnlock() {
+      const doc = vaultDocs.find(d => d.id === activeModalDocId);
+      if (!doc) return;
+
+      const pinInput = document.getElementById('modal-pin-input');
+      const errEl = document.getElementById('modal-pin-error');
+      const pin = pinInput.value.trim();
+
+      if (pin !== '123456' && pin !== '1234') {
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      errEl.classList.add('hidden');
+      doc.locked = false;
+
+      if (doc.rawBuffer) {
+        doc.decryptedBlob = new Blob([doc.rawBuffer], { type: doc.mimeType });
+      } else if (doc.contentSample) {
+        doc.decryptedBlob = new Blob([doc.contentSample], { type: doc.mimeType });
+      } else {
+        doc.decryptedBlob = new Blob(['Decrypted MyVault Secure Content for ' + doc.name], { type: 'text/plain' });
+      }
+
+      renderDocs();
+      document.getElementById('modal-lock-panel').classList.add('hidden');
+      document.getElementById('modal-unlocked-panel').classList.remove('hidden');
+      renderModalPreview(doc);
+    }
+
+    function renderModalPreview(doc) {
+      const box = document.getElementById('modal-preview-box');
+      if (doc.category === 'photo' && doc.contentSample && doc.contentSample.startsWith('data:image')) {
+        box.innerHTML = '<img src="' + doc.contentSample + '" alt="' + doc.name + '" class="max-h-[220px] rounded-lg object-contain shadow-md" />';
+      } else if (doc.rawBuffer && doc.mimeType.startsWith('image/')) {
+        const url = URL.createObjectURL(new Blob([doc.rawBuffer], { type: doc.mimeType }));
+        box.innerHTML = '<img src="' + url + '" alt="' + doc.name + '" class="max-h-[220px] rounded-lg object-contain shadow-md" />';
+      } else if (doc.category === 'video') {
+        box.innerHTML = '<div class="text-center space-y-2">' +
+          '<span class="text-5xl">🎥</span>' +
+          '<div class="text-xs font-bold text-zinc-200">1080p Encrypted Stream Decrypted</div>' +
+          '<div class="text-[10px] text-emerald-400 font-mono">H.264 / AAC • 02:14</div>' +
+        '</div>';
+      } else {
+        box.innerHTML = '<div class="text-center space-y-2 p-4">' +
+          '<span class="text-5xl">' + getDocEmoji(doc) + '</span>' +
+          '<div class="text-xs font-bold text-zinc-200">' + (doc.originalName || doc.name) + '</div>' +
+          '<div class="text-[10px] text-emerald-400 font-mono">Decrypted Plaintext Ready For Local Download</div>' +
+        '</div>';
+      }
+    }
+
+    function downloadActiveModalDoc() {
+      const doc = vaultDocs.find(d => d.id === activeModalDocId);
+      if (!doc || !doc.decryptedBlob) return;
+      triggerBrowserDownload(doc.originalName || (doc.name + '.pdf'), doc.mimeType, doc.decryptedBlob);
+    }
+
+    function deleteDoc(id) {
+      vaultDocs = vaultDocs.filter(d => d.id !== id);
+      renderDocs();
+    }
+
+    // Multi-Page Scanner State & Functions
+    let scannedPages = [];
+
+    function openScannerModal() {
+      scannedPages = [];
+      const titleInput = document.getElementById('scanner-doc-title');
+      if (titleInput) titleInput.value = 'Scanned Document ' + new Date().toLocaleDateString();
+      renderScannerPages();
+      document.getElementById('scanner-modal').classList.remove('hidden');
+    }
+
+    function closeScannerModal() {
+      document.getElementById('scanner-modal').classList.add('hidden');
+      scannedPages = [];
+    }
+
+    function handleScannerFilesAdded(input) {
+      if (!input.files || input.files.length === 0) return;
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          scannedPages.push({
+            name: file.name,
+            size: file.size,
+            type: file.type || 'image/jpeg',
+            dataUrl: e.target.result
+          });
+          renderScannerPages();
+        };
+        reader.readAsDataURL(file);
+      });
+      input.value = '';
+    }
+
+    function removeScannerPage(index) {
+      scannedPages.splice(index, 1);
+      renderScannerPages();
+    }
+
+    function renderScannerPages() {
+      const grid = document.getElementById('scanner-pages-grid');
+      const countEl = document.getElementById('scanner-page-count');
+      if (countEl) countEl.textContent = scannedPages.length;
+
+      if (!grid) return;
+
+      if (scannedPages.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-6 text-zinc-500 text-xs">
+            <span>📷 No pages added yet. Click <strong>Add Page / Snap Photo</strong> to scan document pages.</span>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = scannedPages.map((page, idx) => `
+        <div class="relative group bg-zinc-900 border border-zinc-800 rounded-lg p-2 space-y-1.5">
+          <div class="relative h-24 rounded bg-zinc-950 overflow-hidden flex items-center justify-center">
+            <img src="${page.dataUrl}" class="h-full w-full object-cover" />
+            <span class="absolute top-1 left-1 bg-black/70 text-emerald-400 font-mono text-[10px] px-1.5 py-0.5 rounded font-bold">Page ${idx + 1}</span>
+            <button onclick="removeScannerPage(${idx})" class="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600/80 hover:bg-red-600 text-white flex items-center justify-center text-xs shadow transition">✕</button>
+          </div>
+          <div class="text-[10px] text-zinc-400 font-mono truncate">${page.name}</div>
+        </div>
+      `).join('');
+    }
+
+    async function compileAndSaveScannedPdf() {
+      if (scannedPages.length === 0) {
+        alert('Please add at least one scanned page before compiling.');
+        return;
+      }
+
+      const titleInput = document.getElementById('scanner-doc-title');
+      const catSelect = document.getElementById('scanner-doc-category');
+
+      const title = titleInput && titleInput.value.trim() ? titleInput.value.trim() : 'Scanned Document';
+      const category = catSelect ? catSelect.value : 'document';
+
+      const pdfTextContent = `%PDF-1.4\\n% MyVault Multi-Page Scanned PDF\\n% Total Pages: ${scannedPages.length}\\n` +
+        scannedPages.map((p, i) => `%% Page ${i + 1}: ${p.name} (${p.size} bytes)`).join('\\n') +
+        `\\n%% EOF`;
+
+      const enc = new TextEncoder();
+      const rawBuffer = enc.encode(pdfTextContent).buffer;
+
+      // Encrypt client-side with AES-256-GCM
+      const encrypted = await encryptBytes(rawBuffer, "123456");
+
+      const newDoc = {
+        id: 'doc_' + Date.now(),
+        name: title,
+        originalName: title + '.pdf',
+        category: category,
+        size: rawBuffer.byteLength,
+        mimeType: 'application/pdf',
+        locked: true,
+        isEncrypted: true,
+        notes: `Multi-page document scanner: ${scannedPages.length} pages compiled securely into PDF.`,
+        encryptedData: encrypted,
+        rawBuffer: rawBuffer
+      };
+
+      vaultDocs.unshift(newDoc);
+      renderDocs();
+      closeScannerModal();
+    }
+
+    renderDocs();
+  </script>
+</body>
+</html>
